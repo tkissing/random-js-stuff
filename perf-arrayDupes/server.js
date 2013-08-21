@@ -62,33 +62,47 @@ function dupesWithLoops(arr) {
 	return dupes;
 }
 
-function describeDataSet(array) {
+function describeDataSet(array, options) {
 	var hash = {}, dupes = 0, uniqDupes = 0;
 	for(var i = 0, len = array.length; i < len; i++){
-		var item = array[i];
+		var item = String(array[i]);
 
-		if (hash[item]) {
-			hash[item] += 1;
-		} else {
-			hash[item] = 1;
-		}
+		hash[item] = hash[item] ? hash[item] + 1 : 1;
 	}
 
 	for (var prop in hash) {
-		if (hash[prop] > 1) {
-			dupes++;
-			if (hash[prop] === 2) {
-				uniqDupes++;
-			}
+		if (hash.hasOwnProperty(prop) && hash[prop] > 1) {
+			uniqDupes += 1;
+			dupes += hash[prop] - 1;
 		}
 	}
 
-	console.log({length: array.length, dupes: dupes, uniqDupes: uniqDupes});
+	console.log({
+		'max': options.max,
+		'length': array.length,
+		'dupe %': 100*dupes/array.length,
+		'uniq dupe %': 100*uniqDupes/array.length
+	});
 }
 
 var sets = [
-	{size: 10, max: 10},
-	{size: 100, max: 10}
+	{size: 1e1, max: 1e1},
+	{size: 1e1, max: 1e2},
+
+	{size: 1e2, max: 1e1},
+	{size: 1e2, max: 1e2},
+	{size: 1e2, max: 1e3},
+
+	{size: 1e3, max: 1e1},
+	{size: 1e3, max: 1e2},
+	{size: 1e3, max: 1e3},
+	{size: 1e3, max: 1e4},
+
+	{size: 1e4, max: 1e1},
+	{size: 1e4, max: 1e2},
+	{size: 1e4, max: 1e3},
+	{size: 1e4, max: 1e4},
+	{size: 1e4, max: 1e5}
 ];
 
 
@@ -99,7 +113,7 @@ sets.forEach(function(v) {
 	// add tests
 	suite
 	.on('start', function(event) {
-		describeDataSet(array);
+		describeDataSet(array, v);
 	})
 	.add('dupesWithIndex', function() {
 	  dupesWithIndex(array);
